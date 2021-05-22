@@ -31,9 +31,13 @@ class NerdLauncherActivity:AppCompatActivity() {
 
     //page: 452
     private class ActivityHolder(itemView: View):
-            RecyclerView.ViewHolder(itemView){
+            RecyclerView.ViewHolder(itemView), View.OnClickListener{
                 private val nameTextView = itemView as TextView
                 private lateinit var resolveInfo : ResolveInfo
+
+                init {
+                    nameTextView.setOnClickListener(this)
+                }
 
                 fun bindActivity(resolveInfo: ResolveInfo){
                 this.resolveInfo= resolveInfo
@@ -41,7 +45,18 @@ class NerdLauncherActivity:AppCompatActivity() {
                     val appname = resolveInfo.loadLabel(packageManager).toString()
                     nameTextView.text = appname
                 }
+
+        override fun onClick(v: View?) { //page. 454
+
+            val activityInfo = resolveInfo.activityInfo
+            val intent = Intent(Intent.ACTION_MAIN).apply {
+                setClassName(activityInfo.applicationInfo.packageName, activityInfo.name)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) //page 460
             }
+            val context = v?.context
+            context?.startActivity(intent)
+        }
+    }
 
     private class ActivityAdapter (val activities : List<ResolveInfo>):
         RecyclerView.Adapter<ActivityHolder>(){
